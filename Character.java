@@ -7,11 +7,12 @@ public abstract class Character {
         this.hp = hp;
     }
 
-    public void takeDamage(int dmg) {
-        hp -= dmg;
-    }
-
     public int getHp() {
         return hp;
+    }
+
+    public void takeDamage(int dmg) {
+        hp -= dmg;
+        if (hp < 0) hp = 0;
     }
 }

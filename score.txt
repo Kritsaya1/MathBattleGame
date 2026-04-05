@@ -9,3 +9,11 @@ tong : 30
 tong : 10
 �tong : 0
 tong : 0
+�tong : 0
+tong : 10
+t : 30
+t : 10
+t : 10
+w : 20
+�tong : 0
+t : 0

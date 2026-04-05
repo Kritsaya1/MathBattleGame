@@ -1,22 +1,16 @@
+import java.util.*;
+
 public class Leaderboard {
-    private Node head;
+    private final List<Player> players = new ArrayList<>();
 
-    // add player to list
     public void add(Player p) {
-        Node newNode = new Node(p);
-        newNode.next = head;
-        head = newNode;
+        players.add(p);
     }
 
-    // recursive display
     public void display() {
-        displayRecursive(head);
-    }
-
-    private void displayRecursive(Node current) {
-        if (current == null) return;
-
-        System.out.println(current.data.name + " : " + current.data.getScore());
-        displayRecursive(current.next);
+        System.out.println("\nLeaderboard:");
+        for (Player p : players) {
+            System.out.println(p.getName() + " : " + p.getScore());
+        }
     }
 }
