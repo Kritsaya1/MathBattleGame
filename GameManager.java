@@ -3,14 +3,17 @@ import java.util.*;
 
 public class GameManager {
 
+    // Collection with Generics (Requirement 2.5)
     private final Queue<Question> questions = new LinkedList<>();
     private final Stack<String> history = new Stack<>();
     private final Leaderboard leaderboard = new Leaderboard();
 
     public void startGame() {
         try (Scanner sc = new Scanner(System.in)) {
-            System.out.print("Enter name: ");
+
+            displayData("Enter name: ");
             String name = sc.nextLine();
+
             Player player = new Player(name);
             Enemy enemy = new Enemy();
 
@@ -22,10 +25,10 @@ public class GameManager {
                     questions.add(new MultiplyQuestion());
             }
 
-            // 🔥 เล่นจนกว่าจะมีคน HP = 0
+            // 🔥 Game Loop
             while (player.getHp() > 0 && enemy.getHp() > 0) {
 
-                // ✅ ถ้าคำถามหมด → สร้างใหม่ (ไม่ให้ DRAW)
+                // ถ้าคำถามหมด → generate ใหม่
                 if (questions.isEmpty()) {
                     for (int i = 0; i < 5; i++) {
                         if (i % 2 == 0)
@@ -39,41 +42,46 @@ public class GameManager {
                 int correct = q.ask();
 
                 try {
-                    System.out.print("Answer: ");
+                    displayData("Answer: ");
                     int ans = sc.nextInt();
+
+                    // Custom Exception (Requirement 2.3)
                     if (ans < 0) {
                         throw new InvalidChoiceException("Answer must be positive");
-}
+                    }
+
                     history.push("Correct: " + correct + " Your: " + ans);
+
                     int damage = 10;
+
                     if (ans == correct) {
-                        System.out.println("Correct! You hit enemy!");
+                        displayData("Correct! You hit enemy!");
                         enemy.takeDamage(damage);
                         player.addScore(10);
                     } else {
-                        System.out.println("Wrong! Enemy hits you!");
+                        displayData("Wrong! Enemy hits you!");
                         player.takeDamage(damage);
                     }
 
                 } catch (InvalidChoiceException e) {
-                    System.out.println(e.getMessage());
-                    } catch (Exception e) {
-                    System.out.println("number only ):<");
-                    sc.next(); 
+                    displayData(e.getMessage());
+                } catch (Exception e) {
+                    displayData("number only ):<");
+                    sc.next();
                 }
 
-                System.out.println("Player HP: " + player.getHp() +
-                            " | Enemy HP: " + enemy.getHp());
+                displayFormatted("Player HP", player.getHp());
+                displayFormatted("Enemy HP", enemy.getHp());
             }
 
-            
+            // Result
             if (player.getHp() > 0) {
-                System.out.println("YOU WIN!");
+                displayData("YOU WIN!");
             } else {
-                System.out.println("ENEMY WINS!");
+                displayData("ENEMY WINS!");
             }
 
-            System.out.println("Final Score: " + player.getScore());
+            displayFormatted("Final Score", player.getScore());
 
             leaderboard.add(player);
             leaderboard.display();
@@ -84,26 +92,47 @@ public class GameManager {
         showHistory();
     }
 
-    // 📁 File I/O
+    // ===============================
+    // 📁 File I/O (Requirement 2.1)
+    // ===============================
+    // This method writes player score to a file using append mode.
+    // Try-with-resources ensures the file is closed automatically.
     private void saveScore(Player p) {
-        try {
-            try (FileWriter fw = new FileWriter("score.txt", true)) {
-                fw.write(p.name + " : " + p.getScore() + "\n");
-            }
+        if (p == null) return;
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("score.txt", true))) {
+            bw.write(p.getName() + " : " + p.getScore());
+            bw.newLine();
         } catch (IOException e) {
-            System.out.println("File error");
+            displayData("File error: " + e.getMessage());
         }
     }
 
-    // 📚 Stack (history)
+    // ===============================
+    // 📚 Stack (History Feature)
+    // ===============================
     private void showHistory() {
-        System.out.println("\nHistory:");
+        displayData("\nHistory:");
         while (!history.isEmpty()) {
-            System.out.println(history.pop());
+            displayData(history.pop());
         }
     }
 
     public Queue<Question> getQuestions() {
         return questions;
+    }
+
+    // ============================================
+    // 🔥 Parametric Polymorphism (Requirement 2.6)
+    // ============================================
+    // Generic method allows handling multiple data types with one method
+    // improving reusability and flexibility
+    public <T> void displayData(T data) {
+        System.out.println(data);
+    }
+
+    // Generic method with label formatting
+    public <T> void displayFormatted(String label, T data) {
+        System.out.println(label + ": " + data);
     }
 }

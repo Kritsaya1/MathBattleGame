@@ -8,3 +8,4 @@ tong : 10
 tong : 30
 tong : 10
 �tong : 0
+tong : 0

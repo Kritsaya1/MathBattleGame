@@ -6,6 +6,10 @@ public class Player extends Character {
         this.score = 0;
     }
 
+    public String getName() {
+    return name;
+}
+
     public void addScore(int s) {
         score += s;
     }
